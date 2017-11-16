@@ -12,12 +12,6 @@ export default class RectElement extends BaseElement {
     })
   }
 
-  fill(color) {
-    this.el.setAttribute('fill', color)
-
-    return this
-  }
-
   size(width, height) {
     this.el.setAttribute('width', width)
     this.el.setAttribute('height', height)
@@ -31,4 +25,5 @@ export default class RectElement extends BaseElement {
 
     return this
   }
+
 }

@@ -31,10 +31,20 @@ export default class BaseElement {
   }
 
   fill(color) {
+    this.el.setAttribute('fill', color)
 
+    return this
   }
 
   rotate(deg) {
+    this.style('transform-origin', 'center')
+    this.style('transform', `rotate(${deg}deg)`)
 
+    return this
+  }
+
+  style(prop, value) {
+    this.el.style[prop] = value
+    return this
   }
 }

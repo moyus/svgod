@@ -133,10 +133,25 @@ var BaseElement = function () {
     }
   }, {
     key: 'fill',
-    value: function fill(color) {}
+    value: function fill(color) {
+      this.el.setAttribute('fill', color);
+
+      return this;
+    }
   }, {
     key: 'rotate',
-    value: function rotate(deg) {}
+    value: function rotate(deg) {
+      this.style('transform-origin', 'center');
+      this.style('transform', 'rotate(' + deg + 'deg)');
+
+      return this;
+    }
+  }, {
+    key: 'style',
+    value: function style(prop, value) {
+      this.el.style[prop] = value;
+      return this;
+    }
   }]);
   return BaseElement;
 }();
@@ -201,13 +216,6 @@ var RectElement = function (_BaseElement) {
   }
 
   createClass(RectElement, [{
-    key: 'fill',
-    value: function fill(color) {
-      this.el.setAttribute('fill', color);
-
-      return this;
-    }
-  }, {
     key: 'size',
     value: function size(width, height) {
       this.el.setAttribute('width', width);
@@ -395,49 +403,49 @@ var svgod = function () {
 
   createClass(svgod, [{
     key: 'line',
-    value: function line() {
+    value: function line(from, to) {
       return new LineElement({
         parent: this
       });
     }
   }, {
     key: 'rect',
-    value: function rect() {
+    value: function rect(width, height) {
       return new RectElement({
         parent: this
       });
     }
   }, {
     key: 'circle',
-    value: function circle() {
+    value: function circle(radius) {
       return new CircleElement({
         parent: this
       });
     }
   }, {
     key: 'ellipse',
-    value: function ellipse() {
+    value: function ellipse(xRadius, yRadius) {
       return new EllipseElement({
         parent: this
       });
     }
   }, {
     key: 'path',
-    value: function path() {
+    value: function path(points) {
       return new PathElement({
         parent: this
       });
     }
   }, {
     key: 'polyline',
-    value: function polyline() {
+    value: function polyline(points) {
       return new PolylineElement({
         parent: this
       });
     }
   }, {
     key: 'polygon',
-    value: function polygon() {
+    value: function polygon(points) {
       return new PolygonElement({
         parent: this
       });

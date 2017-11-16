@@ -17,43 +17,43 @@ export default class svgod {
     this.el = this.vm.el
   }
 
-  line() {
+  line(from, to) {
     return new LineElement({
       parent: this
     })
   }
 
-  rect() {
+  rect(width, height) {
     return new RectElement({
       parent: this
     })
   }
 
-  circle() {
+  circle(radius) {
     return new CircleElement({
       parent: this
     })
   }
 
-  ellipse() {
+  ellipse(xRadius, yRadius) {
     return new EllipseElement({
       parent: this
     })
   }
 
-  path() {
+  path(points) {
     return new PathElement({
       parent: this
     })
   }
 
-  polyline() {
+  polyline(points) {
     return new PolylineElement({
       parent: this
     })
   }
 
-  polygon() {
+  polygon(points) {
     return new PolygonElement({
       parent: this
     })

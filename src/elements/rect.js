@@ -1,15 +1,8 @@
 import BaseElement from './base'
 
 export default class RectElement extends BaseElement {
-  constructor({
-      parent = null,
-    ...rest
-    }) {
-    super()
-    this.el = this.create('rect', {
-      parent,
-      ...rest
-    })
+  constructor(options) {
+    super('rect', options)
   }
 
   size(width, height) {

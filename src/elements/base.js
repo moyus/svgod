@@ -1,4 +1,8 @@
 export default class BaseElement {
+  constructor (tag, options) {
+    this.el = this.create(tag, options)
+  }
+
   create(tag, options) {
     const element = document.createElementNS('http://www.w3.org/2000/svg', tag)
 
@@ -6,18 +10,12 @@ export default class BaseElement {
       switch (key) {
         case 'parent':
           let parent = options.parent
-          if (!parent) return
-          if (typeof parent === 'string') {
-            parent = document.querySelector(parent)
-            parent.appendChild(element)
-          } else if (parent.el.nodeType === Node.ELEMENT_NODE) {
+          if (parent) {
             parent.el.appendChild(element)
-          } else if (parent.nodeType === Node.ELEMENT_NODE) {
-            parent.appendChild(element)
           }
           break
         case 'innerHTML':
-          element['textContext'] = options.key
+          element['textContent'] = options.key
           break
         case 'className':
           key = 'class'
@@ -36,6 +34,18 @@ export default class BaseElement {
     return this
   }
 
+  stroke(color) {
+    this.el.setAttribute('stroke', color)
+
+    return this
+  }
+
+  strokeWidth(width) {
+    this.el.setAttribute('stroke-width', width)
+
+    return this
+  }
+
   rotate(deg) {
     this.style('transform-origin', 'center')
     this.style('transform', `rotate(${deg}deg)`)
@@ -45,6 +55,26 @@ export default class BaseElement {
 
   style(prop, value) {
     this.el.style[prop] = value
+    return this
+  }
+  
+  forward() {
+    const parent = this.el.parentElement
+    const index = Array.prototype.indexOf.call(parent.children, this.el)
+    const reference = parent.children[index + 2] || null
+
+    parent.insertBefore(this.el, reference)
+
+    return this
+  }
+
+  backward() {
+    const parent = this.el.parentElement
+    const index = Array.prototype.indexOf.call(parent.children, this.el)
+    const reference = parent.children[index - 1] || null
+
+    parent.insertBefore(this.el, reference)
+
     return this
   }
 }

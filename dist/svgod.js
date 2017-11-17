@@ -74,17 +74,7 @@ var inherits = function (subClass, superClass) {
 
 
 
-var objectWithoutProperties = function (obj, keys) {
-  var target = {};
 
-  for (var i in obj) {
-    if (keys.indexOf(i) >= 0) continue;
-    if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
-    target[i] = obj[i];
-  }
-
-  return target;
-};
 
 var possibleConstructorReturn = function (self, call) {
   if (!self) {
@@ -95,8 +85,10 @@ var possibleConstructorReturn = function (self, call) {
 };
 
 var BaseElement = function () {
-  function BaseElement() {
+  function BaseElement(tag, options) {
     classCallCheck(this, BaseElement);
+
+    this.el = this.create(tag, options);
   }
 
   createClass(BaseElement, [{
@@ -108,18 +100,12 @@ var BaseElement = function () {
         switch (key) {
           case 'parent':
             var parent = options.parent;
-            if (!parent) return;
-            if (typeof parent === 'string') {
-              parent = document.querySelector(parent);
-              parent.appendChild(element);
-            } else if (parent.el.nodeType === Node.ELEMENT_NODE) {
+            if (parent) {
               parent.el.appendChild(element);
-            } else if (parent.nodeType === Node.ELEMENT_NODE) {
-              parent.appendChild(element);
             }
             break;
           case 'innerHTML':
-            element['textContext'] = options.key;
+            element['textContent'] = options.key;
             break;
           case 'className':
             key = 'class';
@@ -139,6 +125,20 @@ var BaseElement = function () {
       return this;
     }
   }, {
+    key: 'stroke',
+    value: function stroke(color) {
+      this.el.setAttribute('stroke', color);
+
+      return this;
+    }
+  }, {
+    key: 'strokeWidth',
+    value: function strokeWidth(width) {
+      this.el.setAttribute('stroke-width', width);
+
+      return this;
+    }
+  }, {
     key: 'rotate',
     value: function rotate(deg) {
       this.style('transform-origin', 'center');
@@ -152,67 +152,66 @@ var BaseElement = function () {
       this.el.style[prop] = value;
       return this;
     }
+  }, {
+    key: 'forward',
+    value: function forward() {
+      var parent = this.el.parentElement;
+      var index = Array.prototype.indexOf.call(parent.children, this.el);
+      var reference = parent.children[index + 2] || null;
+
+      parent.insertBefore(this.el, reference);
+
+      return this;
+    }
+  }, {
+    key: 'backward',
+    value: function backward() {
+      var parent = this.el.parentElement;
+      var index = Array.prototype.indexOf.call(parent.children, this.el);
+      var reference = parent.children[index - 1] || null;
+
+      parent.insertBefore(this.el, reference);
+
+      return this;
+    }
   }]);
   return BaseElement;
 }();
 
-var SvgElement = function (_BaseElement) {
-  inherits(SvgElement, _BaseElement);
-
-  function SvgElement() {
-    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    var _ref$parent = _ref.parent,
-        parent = _ref$parent === undefined ? null : _ref$parent,
-        rest = objectWithoutProperties(_ref, ['parent']);
-    classCallCheck(this, SvgElement);
-
-    var _this = possibleConstructorReturn(this, (SvgElement.__proto__ || Object.getPrototypeOf(SvgElement)).call(this));
-
-    _this.el = _this.create('svg', _extends({
-      parent: parent
-    }, rest));
-    return _this;
-  }
-
-  return SvgElement;
-}(BaseElement);
-
 var LineElement = function (_BaseElement) {
   inherits(LineElement, _BaseElement);
 
-  function LineElement(_ref) {
-    var _ref$parent = _ref.parent,
-        parent = _ref$parent === undefined ? null : _ref$parent,
-        rest = objectWithoutProperties(_ref, ['parent']);
+  function LineElement(options) {
     classCallCheck(this, LineElement);
-
-    var _this = possibleConstructorReturn(this, (LineElement.__proto__ || Object.getPrototypeOf(LineElement)).call(this));
-
-    _this.el = _this.create('line', _extends({
-      parent: parent
-    }, rest));
-    return _this;
+    return possibleConstructorReturn(this, (LineElement.__proto__ || Object.getPrototypeOf(LineElement)).call(this, 'line', options));
   }
 
+  createClass(LineElement, [{
+    key: 'from',
+    value: function from(x, y) {
+      this.el.setAttribute('x1', x);
+      this.el.setAttribute('y1', y);
+
+      return this;
+    }
+  }, {
+    key: 'to',
+    value: function to(x, y) {
+      this.el.setAttribute('x2', x);
+      this.el.setAttribute('y2', y);
+
+      return this;
+    }
+  }]);
   return LineElement;
 }(BaseElement);
 
 var RectElement = function (_BaseElement) {
   inherits(RectElement, _BaseElement);
 
-  function RectElement(_ref) {
-    var _ref$parent = _ref.parent,
-        parent = _ref$parent === undefined ? null : _ref$parent,
-        rest = objectWithoutProperties(_ref, ['parent']);
+  function RectElement(options) {
     classCallCheck(this, RectElement);
-
-    var _this = possibleConstructorReturn(this, (RectElement.__proto__ || Object.getPrototypeOf(RectElement)).call(this));
-
-    _this.el = _this.create('rect', _extends({
-      parent: parent
-    }, rest));
-    return _this;
+    return possibleConstructorReturn(this, (RectElement.__proto__ || Object.getPrototypeOf(RectElement)).call(this, 'rect', options));
   }
 
   createClass(RectElement, [{
@@ -238,28 +237,12 @@ var RectElement = function (_BaseElement) {
 var CircleElement = function (_BaseElement) {
   inherits(CircleElement, _BaseElement);
 
-  function CircleElement(_ref) {
-    var _ref$parent = _ref.parent,
-        parent = _ref$parent === undefined ? null : _ref$parent,
-        rest = objectWithoutProperties(_ref, ['parent']);
+  function CircleElement(options) {
     classCallCheck(this, CircleElement);
-
-    var _this = possibleConstructorReturn(this, (CircleElement.__proto__ || Object.getPrototypeOf(CircleElement)).call(this));
-
-    _this.el = _this.create('circle', _extends({
-      parent: parent
-    }, rest));
-    return _this;
+    return possibleConstructorReturn(this, (CircleElement.__proto__ || Object.getPrototypeOf(CircleElement)).call(this, 'circle', options));
   }
 
   createClass(CircleElement, [{
-    key: 'fill',
-    value: function fill(color) {
-      this.el.setAttribute('fill', color);
-
-      return this;
-    }
-  }, {
     key: 'size',
     value: function size(radius) {
       this.el.setAttribute('r', radius);
@@ -281,70 +264,156 @@ var CircleElement = function (_BaseElement) {
 var EllipseElement = function (_BaseElement) {
   inherits(EllipseElement, _BaseElement);
 
-  function EllipseElement(_ref) {
-    var _ref$parent = _ref.parent,
-        parent = _ref$parent === undefined ? null : _ref$parent,
-        rest = objectWithoutProperties(_ref, ['parent']);
+  function EllipseElement(options) {
     classCallCheck(this, EllipseElement);
-
-    var _this = possibleConstructorReturn(this, (EllipseElement.__proto__ || Object.getPrototypeOf(EllipseElement)).call(this));
-
-    _this.el = _this.create('ellipse', _extends({
-      parent: parent
-    }, rest));
-    return _this;
+    return possibleConstructorReturn(this, (EllipseElement.__proto__ || Object.getPrototypeOf(EllipseElement)).call(this, 'ellipse', options));
   }
 
+  createClass(EllipseElement, [{
+    key: 'size',
+    value: function size(rx, ry) {
+      this.el.setAttribute('rx', rx);
+      this.el.setAttribute('ry', ry);
+
+      return this;
+    }
+  }, {
+    key: 'moveTo',
+    value: function moveTo(x, y) {
+      this.el.setAttribute('cx', x);
+      this.el.setAttribute('cy', y);
+
+      return this;
+    }
+  }]);
   return EllipseElement;
 }(BaseElement);
 
 var PathElement = function (_BaseElement) {
   inherits(PathElement, _BaseElement);
 
-  function PathElement(_ref) {
-    var _ref$parent = _ref.parent,
-        parent = _ref$parent === undefined ? null : _ref$parent,
-        rest = objectWithoutProperties(_ref, ['parent']);
+  function PathElement(options) {
     classCallCheck(this, PathElement);
 
-    var _this = possibleConstructorReturn(this, (PathElement.__proto__ || Object.getPrototypeOf(PathElement)).call(this));
+    var _this = possibleConstructorReturn(this, (PathElement.__proto__ || Object.getPrototypeOf(PathElement)).call(this, 'path', options));
 
-    _this.el = _this.create('path', _extends({
-      parent: parent
-    }, rest));
+    _this.points = [];
     return _this;
   }
 
   createClass(PathElement, [{
+    key: 'draw',
+    value: function draw(command) {
+      for (var _len = arguments.length, data = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        data[_key - 1] = arguments[_key];
+      }
+
+      var points = data.map(function (point) {
+        return point.join(',');
+      });
+      this.points.push('' + command + points.join(' '));
+
+      this.el.setAttribute('d', this.points.join(' '));
+    }
+
+    /**
+     * Set next drawing point start position
+     * @param {number} x 
+     * @param {number} y 
+     * @param {boolean} [relative=false]
+     */
+
+  }, {
     key: 'moveto',
-    value: function moveto() {}
+    value: function moveto(x, y) {
+      var relative = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+      var command = relative ? 'm' : 'M';
+      this.draw(command, [x, y]);
+
+      return this;
+    }
+
+    /**
+     * Draw a straight line
+     * @param {number} x 
+     * @param {number} y 
+     * @param {boolean} [relative=false]
+     */
+
   }, {
     key: 'lineto',
-    value: function lineto() {}
-  }, {
-    key: 'xlineto',
-    value: function xlineto() {}
-  }, {
-    key: 'ylineto',
-    value: function ylineto() {}
+    value: function lineto(x, y) {
+      var relative = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+      var command = void 0;
+      if (x === null) {
+        command = relative ? 'v' : 'V';
+      } else if (y === null) {
+        command = relative ? 'h' : 'H';
+      } else {
+        command = relative ? 'l' : 'L';
+      }
+      this.draw(command, [x, y]);
+
+      return this;
+    }
+
+    /**
+     * Draw a bezier curve
+     * @param {string} command 
+     * @param {array} points 
+     */
+
   }, {
     key: 'curveto',
-    value: function curveto() {}
+    value: function curveto(command) {
+      var data = [];
+
+      for (var i = 0, len = arguments.length <= 1 ? 0 : arguments.length - 1; i < len; i += 2) {
+        data.push([arguments.length <= i + 1 ? undefined : arguments[i + 1], arguments.length <= i + 1 + 1 ? undefined : arguments[i + 1 + 1]]);
+      }
+
+      this.draw.apply(this, [command].concat(data));
+
+      return this;
+    }
+
+    /**
+     * Draw an elliptical curve
+     * @param {number} rx 
+     * @param {number} ry 
+     * @param {number} largeArcFlag 
+     * @param {number} sweepFlag 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {boolean} [relative=false]
+     */
+
   }, {
-    key: 'scurveto',
-    value: function scurveto() {}
-  }, {
-    key: 'qcurve',
-    value: function qcurve() {}
-  }, {
-    key: 'tcurveto',
-    value: function tcurveto() {}
-  }, {
-    key: 'arc',
-    value: function arc() {}
+    key: 'arcto',
+    value: function arcto(rx, ry, largeArcFlag, sweepFlag, x, y) {
+      var relative = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : false;
+
+      var command = relative ? 'a' : 'A';
+
+      this.draw(command, [rx, ry], [1], [largeArcFlag, sweepFlag], [x, y]);
+
+      return this;
+    }
+
+    /**
+     * Draw a straight line from the current
+     * position to the first point in the path
+     */
+
   }, {
     key: 'close',
-    value: function close() {}
+    value: function close() {
+      this.draw('Z');
+
+      return this;
+    }
   }]);
   return PathElement;
 }(BaseElement);
@@ -352,93 +421,130 @@ var PathElement = function (_BaseElement) {
 var PolylineElement = function (_BaseElement) {
   inherits(PolylineElement, _BaseElement);
 
-  function PolylineElement(_ref) {
-    var _ref$parent = _ref.parent,
-        parent = _ref$parent === undefined ? null : _ref$parent,
-        rest = objectWithoutProperties(_ref, ['parent']);
+  function PolylineElement(options) {
     classCallCheck(this, PolylineElement);
 
-    var _this = possibleConstructorReturn(this, (PolylineElement.__proto__ || Object.getPrototypeOf(PolylineElement)).call(this));
+    var _this = possibleConstructorReturn(this, (PolylineElement.__proto__ || Object.getPrototypeOf(PolylineElement)).call(this, 'polyline', options));
 
-    _this.el = _this.create('polyline', _extends({
-      parent: parent
-    }, rest));
+    _this.points = [];
     return _this;
   }
 
+  /**
+   * Draw next point
+   * @param {*} x 
+   * @param {*} y 
+   */
+
+
+  createClass(PolylineElement, [{
+    key: 'point',
+    value: function point(x, y) {
+      this.points.push(x + ',' + y);
+
+      this.el.setAttribute('points', this.points.join(' '));
+
+      return this;
+    }
+  }]);
   return PolylineElement;
 }(BaseElement);
 
 var PolygonElement = function (_BaseElement) {
   inherits(PolygonElement, _BaseElement);
 
-  function PolygonElement(_ref) {
-    var _ref$parent = _ref.parent,
-        parent = _ref$parent === undefined ? null : _ref$parent,
-        rest = objectWithoutProperties(_ref, ['parent']);
+  function PolygonElement(options) {
     classCallCheck(this, PolygonElement);
 
-    var _this = possibleConstructorReturn(this, (PolygonElement.__proto__ || Object.getPrototypeOf(PolygonElement)).call(this));
+    var _this = possibleConstructorReturn(this, (PolygonElement.__proto__ || Object.getPrototypeOf(PolygonElement)).call(this, 'polygon', options));
 
-    _this.el = _this.create('polygon', _extends({
-      parent: parent
-    }, rest));
+    _this.points = [];
     return _this;
   }
 
+  /**
+   * Draw next point
+   * @param {*} x 
+   * @param {*} y 
+   */
+
+
+  createClass(PolygonElement, [{
+    key: 'point',
+    value: function point(x, y) {
+      this.points.push(x + ',' + y);
+
+      this.el.setAttribute('points', this.points.join(' '));
+
+      return this;
+    }
+  }]);
   return PolygonElement;
 }(BaseElement);
 
-var svgod = function () {
-  function svgod(width, height) {
-    classCallCheck(this, svgod);
+var TextElement = function (_BaseElement) {
+  inherits(TextElement, _BaseElement);
 
-    this.vm = new SvgElement({
-      width: width,
-      height: height,
-      viewBox: '0 0 ' + width + ' ' + height
-    });
-    this.el = this.vm.el;
+  function TextElement(options) {
+    classCallCheck(this, TextElement);
+    return possibleConstructorReturn(this, (TextElement.__proto__ || Object.getPrototypeOf(TextElement)).call(this, 'text', options));
   }
 
-  createClass(svgod, [{
+  createClass(TextElement, [{
+    key: 'text',
+    value: function text(t) {
+      this.el['textContent'] = t;
+    }
+  }]);
+  return TextElement;
+}(BaseElement);
+
+var ContainerElement = function (_BaseElement) {
+  inherits(ContainerElement, _BaseElement);
+
+  function ContainerElement(tag, options) {
+    classCallCheck(this, ContainerElement);
+    return possibleConstructorReturn(this, (ContainerElement.__proto__ || Object.getPrototypeOf(ContainerElement)).call(this, tag, options));
+  }
+
+  createClass(ContainerElement, [{
     key: 'line',
-    value: function line(from, to) {
+    value: function line() {
       return new LineElement({
         parent: this
       });
     }
   }, {
     key: 'rect',
-    value: function rect(width, height) {
+    value: function rect() {
       return new RectElement({
         parent: this
       });
     }
   }, {
     key: 'circle',
-    value: function circle(radius) {
+    value: function circle() {
       return new CircleElement({
         parent: this
       });
     }
   }, {
     key: 'ellipse',
-    value: function ellipse(xRadius, yRadius) {
+    value: function ellipse() {
       return new EllipseElement({
         parent: this
       });
     }
   }, {
     key: 'path',
-    value: function path(points) {
+    value: function path() {
       return new PathElement({
         parent: this
       });
     }
   }, {
     key: 'polyline',
-    value: function polyline(points) {
+    value: function polyline() {
       return new PolylineElement({
         parent: this
       });
@@ -450,9 +556,62 @@ var svgod = function () {
         parent: this
       });
     }
+  }, {
+    key: 'text',
+    value: function text() {
+      return new TextElement({
+        parent: this
+      });
+    }
   }]);
-  return svgod;
-}();
+  return ContainerElement;
+}(BaseElement);
+
+var GroupElement = function (_ContainerElement) {
+  inherits(GroupElement, _ContainerElement);
+
+  function GroupElement(options) {
+    classCallCheck(this, GroupElement);
+    return possibleConstructorReturn(this, (GroupElement.__proto__ || Object.getPrototypeOf(GroupElement)).call(this, 'g', options));
+  }
+
+  createClass(GroupElement, [{
+    key: 'group',
+    value: function group(options) {
+      return new GroupElement(_extends({
+        parent: this
+      }, options));
+    }
+  }]);
+  return GroupElement;
+}(ContainerElement);
+
+var SvgElement = function (_ContainerElement) {
+  inherits(SvgElement, _ContainerElement);
+
+  function SvgElement(options) {
+    classCallCheck(this, SvgElement);
+    return possibleConstructorReturn(this, (SvgElement.__proto__ || Object.getPrototypeOf(SvgElement)).call(this, 'svg', options));
+  }
+
+  createClass(SvgElement, [{
+    key: 'group',
+    value: function group(options) {
+      return new GroupElement(_extends({
+        parent: this
+      }, options));
+    }
+  }]);
+  return SvgElement;
+}(ContainerElement);
+
+var svgod = function svgod(width, height) {
+  return new SvgElement({
+    width: width,
+    height: height,
+    viewBox: '0 0 ' + width + ' ' + height
+  });
+};
 
 return svgod;
 

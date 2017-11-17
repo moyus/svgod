@@ -1,9 +1,8 @@
 import ContainerElement from './container'
-import GroupElement from './group'
 
-export default class SvgElement extends ContainerElement {
+export default class GroupElement extends ContainerElement {
   constructor(options) {
-    super('svg', options)
+    super('g', options)
   }
 
   group(options) {

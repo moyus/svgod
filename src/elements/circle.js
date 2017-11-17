@@ -1,21 +1,8 @@
 import BaseElement from './base'
 
 export default class CircleElement extends BaseElement {
-  constructor({
-    parent = null,
-    ...rest
-  }) {
-    super()
-    this.el = this.create('circle', {
-      parent,
-      ...rest
-    })
-  }
-
-  fill(color) {
-    this.el.setAttribute('fill', color)
-
-    return this
+  constructor(options) {
+    super('circle', options)
   }
 
   size(radius) {

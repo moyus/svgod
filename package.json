@@ -1,6 +1,6 @@
 {
   "name": "svgod",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Create SVG like a god with pure JavaScript",
   "main": "dist/svgod.js",
   "scripts": {

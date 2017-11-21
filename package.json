@@ -1,6 +1,6 @@
 {
   "name": "svgod",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Create SVG like a god with pure JavaScript",
   "main": "dist/svgod.js",
   "scripts": {
@@ -11,9 +11,17 @@
     "type": "git",
     "url": "git+https://github.com/moyus/svgod.git"
   },
-  "keywords": [],
+  "keywords": [
+    "svg"
+  ],
+  "files": [
+    "dist",
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/moyus/svgod/issues"
   },
